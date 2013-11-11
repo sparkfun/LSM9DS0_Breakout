@@ -214,6 +214,7 @@
 <wire x1="28.321" y1="8.763" x2="27.94" y2="8.382" width="0.254" layer="21"/>
 <wire x1="27.559" y1="8.763" x2="28.321" y2="8.763" width="0.254" layer="21"/>
 <wire x1="27.94" y1="8.382" x2="27.559" y2="8.763" width="0.254" layer="21"/>
+<rectangle x1="15.24" y1="6.35" x2="17.78" y2="8.89" layer="41"/>
 </plain>
 <libraries>
 <library name="SparkFun-Aesthetics">
