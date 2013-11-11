@@ -120,11 +120,9 @@
 <board>
 <plain>
 <text x="49.53" y="-27.94" size="1.778" layer="51" ratio="15">Jim Lindblom</text>
-<wire x1="0" y1="0" x2="0" y2="13.97" width="0.2032" layer="20"/>
-<wire x1="0" y1="13.97" x2="1.27" y2="15.24" width="0.2032" layer="20" curve="-90"/>
-<wire x1="1.27" y1="15.24" x2="31.75" y2="15.24" width="0.2032" layer="20"/>
-<wire x1="31.75" y1="15.24" x2="33.02" y2="13.97" width="0.2032" layer="20" curve="-90"/>
-<wire x1="33.02" y1="13.97" x2="33.02" y2="0" width="0.2032" layer="20"/>
+<wire x1="0" y1="0" x2="0" y2="15.24" width="0.2032" layer="20"/>
+<wire x1="0" y1="15.24" x2="33.02" y2="15.24" width="0.2032" layer="20"/>
+<wire x1="33.02" y1="15.24" x2="33.02" y2="0" width="0.2032" layer="20"/>
 <wire x1="33.02" y1="0" x2="0" y2="0" width="0.2032" layer="20"/>
 <text x="31.75" y="2.413" size="0.889" layer="21" font="vector" ratio="15" rot="R90" align="center-left">INT2XM</text>
 <text x="29.21" y="2.413" size="0.889" layer="21" font="vector" ratio="15" rot="R90" align="center-left">INT1XM</text>
