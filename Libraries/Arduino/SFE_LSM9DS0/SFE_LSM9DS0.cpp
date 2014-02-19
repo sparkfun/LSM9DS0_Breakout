@@ -565,9 +565,13 @@ uint8_t LSM9DS0::I2CreadByte(uint8_t address, uint8_t subAddress)
 	uint8_t data; // `data` will store the register data
 	// Begin I2C transmission using device write address
 	Wire.beginTransmission(address); 
-	Wire.write(subAddress);	// Write the register to be read
-	Wire.requestFrom(address, (uint8_t) 1); // Transmit device read address
-	while (Wire.available() <= 0) // Wait until data becomes available
+	// Write the register to be read:
+	Wire.write(subAddress);	
+	// End write, but send a restart to keep connection alive:
+	Wire.endTransmission(false);
+	// Transmit device read address:
+	Wire.requestFrom(address, (uint8_t) 1);
+	while (Wire.available() < 1) // Wait until data becomes available
 		;
 	data = Wire.read(); // Read register data into `data` variable
 	Wire.endTransmission(); // End I2C transmission
@@ -582,6 +586,8 @@ void LSM9DS0::I2CreadBytes(uint8_t address, uint8_t subAddress, uint8_t * dest,
 	Wire.beginTransmission(address);
 	// Next send the register to be read. OR with 0x80 to indicate multi-read.
 	Wire.write(subAddress | 0x80);
+	// End write, but send a restart to keep connection alive:
+	Wire.endTransmission(false);
 	// Request `count` bytes of data from the device
 	Wire.requestFrom(address, count);
 	// Wait until the data has been read in

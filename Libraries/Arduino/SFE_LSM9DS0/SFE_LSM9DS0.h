@@ -239,8 +239,8 @@ public:
 	// Use the return value of this function to verify communication.
 	uint16_t begin(gyro_scale gScl = G_SCALE_245DPS, 
 				accel_scale aScl = A_SCALE_2G, mag_scale mScl = M_SCALE_2GS,
-				gyro_odr gODR = G_ODR_95_BW_125, accel_odr aODR = A_ODR_100, 
-				mag_odr mODR = M_ODR_100);
+				gyro_odr gODR = G_ODR_95_BW_125, accel_odr aODR = A_ODR_50, 
+				mag_odr mODR = M_ODR_50);
 	
 	// readGyro() -- Read the gyroscope output registers.
 	// This function will read all six gyroscope output registers.
