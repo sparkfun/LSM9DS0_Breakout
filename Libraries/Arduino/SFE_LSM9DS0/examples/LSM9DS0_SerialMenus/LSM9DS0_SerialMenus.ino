@@ -5,6 +5,10 @@ Jim Lindblom @ SparkFun Electronics
 Original Creation Date: February 14, 2014 (Happy Valentines Day!)
 https://github.com/sparkfun/LSM9DS0_Breakout
 
+The LSM9DS0 is a versatile motion-sensing system-in-a-chip. It
+features 3-axis accelerometer/gyroscope/magnetometer, and can be
+controlled over either an SPI or I2C interface.
+
 This Arduino sketch is a demo of all things SEF_LSM9DS0 library.
 Once you attach all hardware, and upload the sketch, open your
 Serial monitor at 115200 BPS. Follow the menu prompts to either:
@@ -141,6 +145,8 @@ void printAccel()
     }
     else
     {
+	  // Using the calcAccel helper function, we can get the
+	  // accelerometer readings in g's.
       Serial.print(dof.calcAccel(dof.ax));
       Serial.print(", ");
       Serial.print(dof.calcAccel(dof.ay));
@@ -172,6 +178,8 @@ void printGyro()
     }
     else
     {
+	  // Using the calcGyro helper function, we can get the
+	  // gyroscope readings in degrees per second (DPS).
       Serial.print(dof.calcGyro(dof.gx));
       Serial.print(", ");
       Serial.print(dof.calcGyro(dof.gy));
@@ -201,17 +209,19 @@ void printMag()
       Serial.print(", ");
       Serial.print(dof.mz);
       Serial.print(", ");
-      Serial.println(calcHeading(dof.mx, dof.my, dof.mz));
+      Serial.println(calcHeading(dof.mx, dof.my));
     }
     else
     {
+	  // Using the calcMg helper function, we can get the
+	  // magnetometer readings in gauss (Gs).
       Serial.print(dof.calcMag(dof.mx), 4);
       Serial.print(", ");
       Serial.print(dof.calcMag(dof.my), 4);
       Serial.print(", ");
       Serial.print(dof.calcMag(dof.mz), 4);
       Serial.print(", ");
-      Serial.println(calcHeading(dof.mx, dof.my, dof.mz));
+      Serial.println(calcHeading(dof.mx, dof.my));
     }
   }
 }
@@ -219,15 +229,15 @@ void printMag()
 // Here's a simple example function to calculate heading based on
 // magnetometer readings. This only works when the 9DOF is flat
 // (x-axis normal to gravity).
-float calcHeading(float hx, float hy, float hz)
+float calcHeading(float hx, float hy)
 {  
   if (hy > 0)
   {
-    return 90 - atan(hx / hy) * 180 / PI;
+    return 90 - (atan(hx / hy) * 180 / PI);
   }
   else if (hy < 0)
   {
-    return 270 - atan(hx / hy) * 180 / PI;
+    return 270 - (atan(hx / hy) * 180 / PI);
   }
   else // hy = 0
   {
@@ -250,19 +260,27 @@ void streamAll()
   }
 }
 
+// setScale() provides an interface to switch the full-scale range
+// of each sensor. This function will block until three characters
+// (to select the three ranges) are received.
 void setScale()
 {
   char c;
   
+  // Print the accelerometer range options:
   Serial.println(F("Set accelerometer scale:"));
   Serial.println(F("\t1) +/- 2G"));
   Serial.println(F("\t2) +/- 4G"));
   Serial.println(F("\t3) +/- 6G"));
   Serial.println(F("\t4) +/- 8G"));
   Serial.println(F("\t5) +/- 16G"));
+  // Wait for a serial char to come in:
   while (Serial.available() < 1)
     ;
   c = Serial.read();
+  // Use the setAccelScale function to set the accelerometer
+  // full-scale range to any of the possible ranges. These ranges
+  // are all defined in SFE_LSM9DS0.h.
   switch (c)
   {
     case '1':
@@ -281,14 +299,18 @@ void setScale()
       dof.setAccelScale(dof.A_SCALE_16G);
       break;
   }
-  
+  // Print the gyro scale ranges:
   Serial.println(F("Set gyroscope scale:"));
   Serial.println(F("\t1) +/- 245 DPS"));
   Serial.println(F("\t2) +/- 500 DPS"));
   Serial.println(F("\t3) +/- 2000 DPS"));
+  // Wait for a character to come in:
   while (Serial.available() < 1)
     ;
   c = Serial.read();
+  // Use the setGyroScale function to set the gyroscope
+  // full-scale range to any of the possible ranges. These ranges
+  // are all defined in SFE_LSM9DS0.h.
   switch (c)
   {
     case '1':
@@ -301,15 +323,19 @@ void setScale()
       dof.setGyroScale(dof.G_SCALE_2000DPS);
       break;
   }
-  
+  // Print the magnetometer scale options:
   Serial.println(F("Set magnetometer scale:"));
   Serial.println(F("\t1) +/- 2GS"));
   Serial.println(F("\t2) +/- 4GS"));
   Serial.println(F("\t3) +/- 8GS"));
   Serial.println(F("\t4) +/- 12GS"));
+  // Wait for a char:
   while (Serial.available() < 1)
     ;
   c = Serial.read();
+  // Use the setMagScale function to set the magnetometer
+  // full-scale range to any of the possible ranges. These ranges
+  // are all defined in SFE_LSM9DS0.h.
   switch (c)
   {
     case '1':
@@ -327,6 +353,8 @@ void setScale()
   }
 }
 
+// setRaw simply switches the state of the global printRaw
+// variable. It'll print a message to say what it's switched to.
 void setRaw()
 {
   if (printRaw)
@@ -341,19 +369,27 @@ void setRaw()
   }
 }
 
+// setODR() provides a serial interface to set the output data
+// rate (ODR) for each sensor. It will block until it receives
+// three characters to set the data rates.
 void setODR()
 {
   char c;
   
+  // Print the menu options for accel data rate:
   Serial.println(F("Set Accelerometer ODR (Hz):"));
   Serial.println(F("\t1) 3.125 \t 6) 100"));
   Serial.println(F("\t2) 6.25  \t 7) 200"));
   Serial.println(F("\t3) 12.5  \t 8) 400"));
   Serial.println(F("\t4) 25    \t 9) 800"));
   Serial.println(F("\t5) 50    \t A) 1600"));
+  // Wait for a character to be read in:
   while (Serial.available() < 1)
     ;
   c = Serial.read();
+  // Use the setAccelODR function to set the accelerometer
+  // data rate to any of the possible ranges. These ranges
+  // are all defined in SFE_LSM9DS0.h.
   switch (c)
   {
     case '1':
@@ -389,6 +425,7 @@ void setODR()
       break;
   }
   
+  // Print the menu options for the gyro ODR's
   Serial.println(F("Set Gyro ODR/Cutoff (Hz):"));
   Serial.println(F("\t1) 95/12.5 \t 8) 380/25"));
   Serial.println(F("\t2) 95/25   \t 9) 380/50"));
@@ -397,9 +434,13 @@ void setODR()
   Serial.println(F("\t5) 190/50  \t C) 760/35"));
   Serial.println(F("\t6) 190/70  \t D) 760/50"));
   Serial.println(F("\t7) 380/20  \t E) 760/100"));
+  // Wait for a character to arrive:
   while (Serial.available() < 1)
     ;
   c = Serial.read();
+  // Use the setGyroODR function to set the gyroscope
+  // data rate to any of the possible ranges. These ranges
+  // are all defined in SFE_LSM9DS0.h.
   switch (c)
   {
     case '1':
@@ -451,13 +492,18 @@ void setODR()
       break;
   }
   
+  // Print all possible range selections for the magnetometer:
   Serial.println(F("Set Magnetometer ODR (Hz):"));
   Serial.println(F("\t1) 3.125 \t 4) 25"));
   Serial.println(F("\t2) 6.25  \t 5) 50"));
   Serial.println(F("\t3) 12.5  \t 6) 100"));
+  // Wait for a character to come in:
   while (Serial.available() < 1)
     ;
   c = Serial.read();
+  // Use the setMagODR function to set the magnetometer
+  // data rate to any of the possible ranges. These ranges
+  // are all defined in SFE_LSM9DS0.h.
   switch (c)
   {
     case '1':
@@ -498,36 +544,37 @@ void printMenu()
   Serial.println(); 
 }
 
+// parseMenu() takes a char parameter, which should map to one of
+// the defined menu options. A switch statement will control what
+// happens based on the given character input.
 void parseMenu(char c)
 {
   switch (c)
   {
     case '1':
       while(!Serial.available())
-        printAccel();
+        printAccel(); // Print accelerometer values
       break;
     case '2':
       while(!Serial.available())
-        printGyro();
+        printGyro(); // Print gyroscope values
       break;
     case '3':
       while(!Serial.available())
-        printMag();
+        printMag(); // Print magnetometer values
       break;
     case '4':
       while(!Serial.available())
-      {
-        streamAll();
-      }
+        streamAll(); // Print all sensor readings
       break;
     case '5':
-      setScale();
+      setScale(); // Set the ranges of each sensor
       break;
     case '6':
-      setRaw();
+      setRaw(); // Switch between calculated and raw output
       break;
     case '7':
-      setODR();
+      setODR(); // Set the data rates of each sensor
       break;
   }
 }
