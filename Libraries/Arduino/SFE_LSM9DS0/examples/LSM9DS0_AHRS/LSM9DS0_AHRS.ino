@@ -266,7 +266,8 @@ void loop()
 
   // Define output variables from updated quaternion---these are Tait-Bryan angles, commonly used in aircraft orientation.
   // In this coordinate system, the positive z-axis is down toward Earth. 
-  // Yaw is the angle between Sensor x-axis and Earth magnetic North (or true North if corrected for local declination, looking down on the sensor positive yaw is counterclockwise.
+  // Yaw is the angle between Sensor x-axis and Earth magnetic North (or true North if corrected for local declination),
+  // looking down on the sensor positive yaw is counterclockwise.
   // Pitch is angle between sensor x-axis and Earth ground plane, toward the Earth is positive, up toward the sky is negative.
   // Roll is angle between sensor y-axis and Earth ground plane, y-axis up is positive roll.
   // These arise from the definition of the homogeneous rotation matrix constructed from quaternions.
