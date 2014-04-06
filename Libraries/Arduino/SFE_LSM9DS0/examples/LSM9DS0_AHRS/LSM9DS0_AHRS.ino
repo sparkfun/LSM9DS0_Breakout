@@ -69,7 +69,7 @@ into service as a digital input instead.
 
 Development environment specifics:
 	IDE: Arduino 1.0.5
-	Hardware Platform: Arduino Pro 3.3V/8MHz
+	Hardware Platform: Arduino Pro 3.3V/8 MHz
 	LSM9DS0 Breakout Version: 1.0
 
 This code is beerware. If you see me (or any other SparkFun 
@@ -145,11 +145,11 @@ uint16_t count = 0;  // used to control display output rate
 uint16_t delt_t = 0; // used to control display output rate
 float pitch, yaw, roll, heading;
 float deltat = 0.0f;        // integration interval for both filter schemes
-uint16_t lastUpdate = 0; // used to calculate integration interval
-uint16_t now = 0;        // used to calculate integration interval
+uint16_t lastUpdate = 0;    // used to calculate integration interval
+uint16_t now = 0;           // used to calculate integration interval
 
 float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values 
-float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    //vector to hold quaternion
+float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
 float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
 
 void setup()
@@ -168,10 +168,10 @@ void setup()
 // Start device display with ID of sensor
   display.clearDisplay();
   display.setTextSize(2);
-  display.setCursor(0,0);  display.print("LSM9SD0");
+  display.setCursor(0,0);  display.print("LSM9DS0");
   display.setTextSize(1);
   display.setCursor(0, 20); display.print("9 DOF sensor");
-  display.setCursor(20, 30); display.print("IMU");
+  display.setCursor(20, 30); display.print("AHRS");
   display.setCursor(0, 40); display.print("data fusion");
   display.display();
   delay(2000);
