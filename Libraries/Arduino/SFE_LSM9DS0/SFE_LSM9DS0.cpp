@@ -366,6 +366,17 @@ void LSM9DS0::setAccelODR(accel_odr aRate)
 	// And write the new register value back into CTRL_REG1_XM:
 	xmWriteByte(CTRL_REG1_XM, temp);
 }
+void LSM9DS0::setAccelABW(accel_abw abwRate)
+{
+	// We need to preserve the other bytes in CTRL_REG2_XM. So, first read it:
+	uint8_t temp = xmReadByte(CTRL_REG2_XM);
+	// Then mask out the accel ABW bits:
+	temp &= 0xFF^(0x3 << 7);
+	// Then shift in our new ODR bits:
+	temp |= (abwRate << 7);
+	// And write the new register value back into CTRL_REG2_XM:
+	xmWriteByte(CTRL_REG2_XM, temp);
+}
 void LSM9DS0::setMagODR(mag_odr mRate)
 {
 	// We need to preserve the other bytes in CTRL_REG5_XM. So, first read it:

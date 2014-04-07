@@ -133,26 +133,26 @@ public:
 	// gyro_scale defines the possible full-scale ranges of the gyroscope:
 	enum gyro_scale
 	{
-		G_SCALE_245DPS,		// 00: +/- 245 degrees per second
-		G_SCALE_500DPS,		// 01: +/- 500 dps
-		G_SCALE_2000DPS,	// 10: +/- 2000 dps
+		G_SCALE_245DPS,		// 00:  245 degrees per second
+		G_SCALE_500DPS,		// 01:  500 dps
+		G_SCALE_2000DPS,	// 10:  2000 dps
 	};
 	// accel_scale defines all possible FSR's of the accelerometer:
 	enum accel_scale
 	{
-		A_SCALE_2G,	// 000: +/- 2g
-		A_SCALE_4G,	// 001: +/- 4g
-		A_SCALE_6G,	// 010: +/- 6g
-		A_SCALE_8G,	// 011: +/- 8g
-		A_SCALE_16G	// 100: +/- 16g
+		A_SCALE_2G,	// 000:  2g
+		A_SCALE_4G,	// 001:  4g
+		A_SCALE_6G,	// 010:  6g
+		A_SCALE_8G,	// 011:  8g
+		A_SCALE_16G	// 100:  16g
 	};
 	// mag_scale defines all possible FSR's of the magnetometer:
 	enum mag_scale
 	{
-		M_SCALE_2GS,	// 00: +/- 2Gs
-		M_SCALE_4GS, 	// 01: +/- 4Gs
-		M_SCALE_8GS,	// 10: +/- 8Gs
-		M_SCALE_12GS,	// 11: +/- 12Gs
+		M_SCALE_2GS,	// 00:  2Gs
+		M_SCALE_4GS, 	// 01:  4Gs
+		M_SCALE_8GS,	// 10:  8Gs
+		M_SCALE_12GS,	// 11:  12Gs
 	};
 	// gyro_odr defines all possible data rate/bandwidth combos of the gyro:
 	enum gyro_odr
@@ -188,7 +188,18 @@ public:
 		A_ODR_800,		// 800 Hz (9)
 		A_ODR_1600		// 1600 Hz (0xA)
 	};
-	// accel_oder defines all possible output data rates of the magnetometer:
+
+      // accel_abw defines all possible anti-aliasing filter rates of the accelerometer:
+	enum accel_abw
+	{
+		A_ABW_773,		// 773 Hz (0x0)
+		A_ABW_194,		// 194 Hz (0x1)
+		A_ABW_362,		// 362 Hz (0x2)
+		A_ABW_50,		//  50 Hz (0x3)
+	};
+
+
+	// mag_oder defines all possible output data rates of the magnetometer:
 	enum mag_odr
 	{
 		M_ODR_3125,	// 3.125 Hz (0x00)
@@ -234,7 +245,7 @@ public:
 	//		bytes of the output are the WHO_AM_I reading of the accel. The
 	//		least significant two bytes are the WHO_AM_I reading of the gyro.
 	// All parameters have a defaulted value, so you can call just "begin()".
-	// Default values are FSR's of: +/- 245DPS, 2g, 2Gs; ODRs of 95 Hz for 
+	// Default values are FSR's of:  245DPS, 2g, 2Gs; ODRs of 95 Hz for 
 	// gyro, 100 Hz for accelerometer, 100 Hz for magnetometer.
 	// Use the return value of this function to verify communication.
 	uint16_t begin(gyro_scale gScl = G_SCALE_245DPS, 
@@ -315,7 +326,15 @@ public:
 	// Input:
 	//	- aRate = The desired output rate of the accel.
 	//		Must be a value from the accel_odr enum (check above, there're 11).
-	void setAccelODR(accel_odr aRate);
+	void setAccelODR(accel_odr aRate); 	
+
+// setAccelABW() -- Set the anti-aliasing filter rate of the accelerometer
+	// Input:
+	//	- abwRate = The desired anti-aliasing filter rate of the accel.
+	//		Must be a value from the accel_abw enum (check above, there're 4).
+	void setAccelABW(accel_abw abwRate);
+
+
 	
 	// setMagODR() -- Set the output data rate of the magnetometer
 	// Input:
@@ -379,7 +398,7 @@ private:
 	//	- CTRL_REG0_XM = 0x00: FIFO disabled. HPF bypassed. Normal mode.
 	//	- CTRL_REG1_XM = 0x57: 100 Hz data rate. Continuous update.
 	//		all axes enabled.
-	//	- CTRL_REG2_XM = 0x00: +/- 2g scale. 773 Hz anti-alias filter BW.
+	//	- CTRL_REG2_XM = 0x00:  2g scale. 773 Hz anti-alias filter BW.
 	//	- CTRL_REG3_XM = 0x04: Accel data ready signal on INT1_XM pin.
 	void initAccel();
 	
@@ -389,7 +408,7 @@ private:
 	//	- CTRL_REG4_XM = 0x04: Mag data ready signal on INT2_XM pin.
 	//	- CTRL_REG5_XM = 0x14: 100 Hz update rate. Low resolution. Interrupt
 	//		requests don't latch. Temperature sensor disabled.
-	//	- CTRL_REG6_XM = 0x00: +/- 2 Gs scale.
+	//	- CTRL_REG6_XM = 0x00:  2 Gs scale.
 	//	- CTRL_REG7_XM = 0x00: Continuous conversion mode. Normal HPF mode.
 	//	- INT_CTRL_REG_M = 0x09: Interrupt active-high. Enable interrupts.
 	void initMag();
