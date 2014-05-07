@@ -141,12 +141,12 @@ const byte DRDYG  = 4; // DRDYG  tells us when gyro data is ready
 #define Kp 2.0f * 5.0f // these are the free parameters in the Mahony filter and fusion scheme, Kp for proportional feedback, Ki for integral
 #define Ki 0.0f
 
-uint16_t count = 0;  // used to control display output rate
-uint16_t delt_t = 0; // used to control display output rate
+uint32_t count = 0;  // used to control display output rate
+uint32_t delt_t = 0; // used to control display output rate
 float pitch, yaw, roll, heading;
 float deltat = 0.0f;        // integration interval for both filter schemes
-uint16_t lastUpdate = 0;    // used to calculate integration interval
-uint16_t now = 0;           // used to calculate integration interval
+uint32_t lastUpdate = 0;    // used to calculate integration interval
+uint32_t now = 0;           // used to calculate integration interval
 
 float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values 
 float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
@@ -278,7 +278,8 @@ void loop()
     pitch = -asin(2.0f * (q[1] * q[3] - q[0] * q[2]));
     roll  = atan2(2.0f * (q[0] * q[1] + q[2] * q[3]), q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]);
     pitch *= 180.0f / PI;
-    yaw   *= 180.0f / PI - 13.8f; // Declination at Danville, California is 13 degrees 48 minutes and 47 seconds on 2014-04-04
+    yaw   *= 180.0f / PI;
+    yaw   -=  13.8f; // Declination at Danville, California is 13 degrees 48 minutes and 47 seconds on 2014-04-04
     roll  *= 180.0f / PI;
 
     Serial.print("ax = "); Serial.print((int)1000*ax);  
