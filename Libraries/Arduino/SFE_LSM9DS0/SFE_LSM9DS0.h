@@ -218,7 +218,10 @@ public:
 	int16_t gx, gy, gz; // x, y, and z axis readings of the gyroscope
 	int16_t ax, ay, az; // x, y, and z axis readings of the accelerometer
 	int16_t mx, my, mz; // x, y, and z axis readings of the magnetometer
-	
+
+	float abias[3];
+        float gbias[3];
+
 	// LSM9DS0 -- LSM9DS0 class constructor
 	// The constructor will set up a handful of private variables, and set the
 	// communication mode as well.
@@ -328,7 +331,7 @@ public:
 	//		Must be a value from the accel_odr enum (check above, there're 11).
 	void setAccelODR(accel_odr aRate); 	
 
-// setAccelABW() -- Set the anti-aliasing filter rate of the accelerometer
+        // setAccelABW() -- Set the anti-aliasing filter rate of the accelerometer
 	// Input:
 	//	- abwRate = The desired anti-aliasing filter rate of the accel.
 	//		Must be a value from the accel_abw enum (check above, there're 4).
@@ -359,6 +362,16 @@ public:
 	void configGyroInt(uint8_t int1Cfg, uint16_t int1ThsX = 0,
 						  uint16_t int1ThsY = 0, uint16_t int1ThsZ = 0, 
 						  uint8_t duration = 0);
+
+       // This is a function that uses the FIFO to accumulate sample of accelerometer and gyro data, average
+       // them, scales them to  gs and deg/s, respectively, and then passes the biases to the main sketch
+       // for subtraction from all subsequent data. There are no gyro and accelerometer bias registers to store
+       // the data as there are in the ADXL345, a precursor to the LSM9DS0, or the MPU-9150, so we have to
+       // subtract the biases ourselves. This results in a more accurate measurement in general and can
+       // remove errors due to imprecise or varying initial placement. Calibration of sensor data in this manner
+       // is good practice.
+        void calLSM9DS0(float gbias[3], float abias[3]);
+
 
 private:	
 	// xmAddress and gAddress store the I2C address or SPI chip select pin
