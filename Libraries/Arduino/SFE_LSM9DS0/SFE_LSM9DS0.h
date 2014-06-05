@@ -218,7 +218,7 @@ public:
 	int16_t gx, gy, gz; // x, y, and z axis readings of the gyroscope
 	int16_t ax, ay, az; // x, y, and z axis readings of the accelerometer
 	int16_t mx, my, mz; // x, y, and z axis readings of the magnetometer
-
+        int16_t temperature;
 	float abias[3];
         float gbias[3];
 
@@ -273,6 +273,12 @@ public:
 	// The readings are stored in the class' mx, my, and mz variables. Read
 	// those _after_ calling readMag().
 	void readMag();
+
+	// readTemp() -- Read the temperature output register.
+	// This function will read two temperature output registers.
+	// The combined readings are stored in the class' temperature variables. Read
+	// those _after_ calling readTemp().
+	void readTemp();
 	
 	// calcGyro() -- Convert from RAW signed 16-bit value to degrees per second
 	// This function reads in a signed 16-bit value and returns the scaled
@@ -363,13 +369,7 @@ public:
 						  uint16_t int1ThsY = 0, uint16_t int1ThsZ = 0, 
 						  uint8_t duration = 0);
 
-       // This is a function that uses the FIFO to accumulate sample of accelerometer and gyro data, average
-       // them, scales them to  gs and deg/s, respectively, and then passes the biases to the main sketch
-       // for subtraction from all subsequent data. There are no gyro and accelerometer bias registers to store
-       // the data as there are in the ADXL345, a precursor to the LSM9DS0, or the MPU-9150, so we have to
-       // subtract the biases ourselves. This results in a more accurate measurement in general and can
-       // remove errors due to imprecise or varying initial placement. Calibration of sensor data in this manner
-       // is good practice.
+
         void calLSM9DS0(float gbias[3], float abias[3]);
 
 
