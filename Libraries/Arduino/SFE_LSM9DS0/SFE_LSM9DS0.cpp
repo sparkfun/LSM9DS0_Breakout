@@ -256,8 +256,8 @@ void LSM9DS0::initMag()
 void LSM9DS0::calLSM9DS0(float * gbias, float * abias)
 {  
   uint8_t data[6] = {0, 0, 0, 0, 0, 0};
-  int16_t gyro_bias[3] = {0, 0, 0}, accel_bias[3] = {0, 0, 0};
-  int samples, ii;
+  int32_t gyro_bias[3] = {0, 0, 0}, accel_bias[3] = {0, 0, 0};
+  uint16_t samples, ii;
   
   // First get gyro bias
   byte c = gReadByte(CTRL_REG5_G);
@@ -269,10 +269,15 @@ void LSM9DS0::calLSM9DS0(float * gbias, float * abias)
   samples = (gReadByte(FIFO_SRC_REG_G) & 0x1F); // Read number of stored samples
 
   for(ii = 0; ii < samples ; ii++) {            // Read the gyro data stored in the FIFO
+    int16_t gyro_temp[3] = {0, 0, 0};
     gReadBytes(OUT_X_L_G,  &data[0], 6);
-    gyro_bias[0] += (((int16_t)data[1] << 8) | data[0]);
-    gyro_bias[1] += (((int16_t)data[3] << 8) | data[2]);
-    gyro_bias[2] += (((int16_t)data[5] << 8) | data[4]);
+    gyro_temp[0] = (int16_t) (((int16_t)data[1] << 8) | data[0]); // Form signed 16-bit integer for each sample in FIFO
+    gyro_temp[1] = (int16_t) (((int16_t)data[3] << 8) | data[2]);
+    gyro_temp[2] = (int16_t) (((int16_t)data[5] << 8) | data[4]);
+
+    gyro_bias[0] += (int32_t) gyro_temp[0]; // Sum individual signed 16-bit biases to get accumulated signed 32-bit biases
+    gyro_bias[1] += (int32_t) gyro_temp[1]; 
+    gyro_bias[2] += (int32_t) gyro_temp[2]; 
   }  
 
   gyro_bias[0] /= samples; // average the data
@@ -299,15 +304,24 @@ void LSM9DS0::calLSM9DS0(float * gbias, float * abias)
   samples = (xmReadByte(FIFO_SRC_REG) & 0x1F); // Read number of stored accelerometer samples
 
    for(ii = 0; ii < samples ; ii++) {          // Read the accelerometer data stored in the FIFO
+    int16_t accel_temp[3] = {0, 0, 0};
     xmReadBytes(OUT_X_L_A, &data[0], 6);
-    accel_bias[0] += (((int16_t)data[1] << 8) | data[0]);
-    accel_bias[1] += (((int16_t)data[3] << 8) | data[2]);
-    accel_bias[2] += (((int16_t)data[5] << 8) | data[4]) - (int16_t)(1./aRes); // Assumes sensor facing up!
+    accel_temp[0] = (int16_t) (((int16_t)data[1] << 8) | data[0]);// Form signed 16-bit integer for each sample in FIFO
+    accel_temp[1] = (int16_t) (((int16_t)data[3] << 8) | data[2]);
+    accel_temp[2] = (int16_t) (((int16_t)data[5] << 8) | data[4]);  
+
+    accel_bias[0] += (int32_t) accel_temp[0]; // Sum individual signed 16-bit biases to get accumulated signed 32-bit biases
+    accel_bias[1] += (int32_t) accel_temp[1]; 
+    accel_bias[2] += (int32_t) accel_temp[2]; 
   }  
 
   accel_bias[0] /= samples; // average the data
   accel_bias[1] /= samples; 
   accel_bias[2] /= samples; 
+
+  if(accel_bias[2] > 0L) {accel_bias[2] -= (int32_t) (1.0/aRes);}  // Remove gravity from the z-axis accelerometer bias calculation
+  else {accel_bias[2] += (int32_t) (1.0/aRes);}
+ 
   
   abias[0] = (float)accel_bias[0]*aRes; // Properly scale data to get gs
   abias[1] = (float)accel_bias[1]*aRes;
@@ -642,51 +656,6 @@ void LSM9DS0::initI2C()
 {
 	Wire.begin();	// Initialize I2C library
 }
-
-
-//void LSM9DS0::I2CwriteByte(uint8_t address, uint8_t subAddress, uint8_t data)
-//{
-//	// Begin transmission at device write address
-//	Wire.beginTransmission(address);
-//	Wire.write(subAddress); // Write register to be written to
-//	Wire.write(data); // Transmit byte to write
-//	Wire.endTransmission(); // End I2C transmission
-//}
-
-//uint8_t LSM9DS0::I2CreadByte(uint8_t address, uint8_t subAddress)
-//{
-//	uint8_t data; // `data` will store the register data
-//	// Begin I2C transmission using device write address
-//	Wire.beginTransmission(address); 
-//	// Write the register to be read:
-//	Wire.write(subAddress);	
-//	// End write, but send a restart to keep connection alive:
-//	Wire.endTransmission(false);
-//	// Transmit device read address:
-//	Wire.requestFrom(address, (uint8_t) 1);
-//	while (Wire.available() < 1) // Wait until data becomes available
-//}
-
-//void LSM9DS0::I2CreadBytes(uint8_t address, uint8_t subAddress, uint8_t * dest,
-//							uint8_t count)
-//{  
-//	// Begin I2C transmission and send device address
-//	Wire.beginTransmission(address);
-//	// Next send the register to be read. OR with 0x80 to indicate multi-read.
-//	Wire.write(subAddress | 0x80);
-//	// End write, but send a restart to keep connection alive:
-//	Wire.endTransmission(false);
-//	// Request `count` bytes of data from the device
-//	Wire.requestFrom(address, count);
-//	// Wait until the data has been read in
-//	while (Wire.available() < count)
-//		;
-//	// Store all `count` bytes into the given destination array.
-//	for (int i=0; i<count ;i++)
-//		dest[i] = Wire.read();
-//	// End I2C Transmission
-//	Wire.endTransmission();
-//}
 
 
         // Wire.h read and write protocols
