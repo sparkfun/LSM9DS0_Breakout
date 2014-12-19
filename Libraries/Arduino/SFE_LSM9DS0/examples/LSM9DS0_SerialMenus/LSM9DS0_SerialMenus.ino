@@ -83,8 +83,8 @@ LSM9DS0 dof(MODE_I2C, LSM9DS0_G, LSM9DS0_XM);
 ///////////////////////////////
 // Interrupt Pin Definitions //
 ///////////////////////////////
-const byte INT1XM = 2; // INT1XM tells us when accel data is ready
-const byte INT2XM = 3; // INT2XM tells us when mag data is ready
+const byte INT1XM = 3; // INT1XM tells us when accel data is ready
+const byte INT2XM = 2; // INT2XM tells us when mag data is ready
 const byte DRDYG = 4;  // DRDYG tells us when gyro data is ready
 
 // A boolean to keep track of whether we're printing raw (ADC)
