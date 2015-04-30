@@ -11,7 +11,14 @@ Repository Contents
 -------------------
 * **/Libraries** - The SFE_LSM9DS0 Arduino library.
 * **/Hardware** - All Eagle design files (.brd, .sch)
-* **/Production Files** - Production-related files (the panel).
+* **/Production** - Production-related files (the panel).
+
+Documentation
+--------------
+* **[Library](https://github.com/sparkfun/SparkFun_LSM9DS0_Arduino_Library)** - Arduino library for the LSM9DS0.
+* **[Hookup Guide](https://learn.sparkfun.com/tutorials/lsm9ds0-hookup-guide)** - Basic hookup guide for the LSM9DS0.
+* **[SparkFun Fritzing repo](https://github.com/sparkfun/Fritzing_Parts)** - Fritzing diagrams for SparkFun products.
+* **[SparkFun 3D Model repo](https://github.com/sparkfun/3D_Models)** - 3D models of SparkFun products. 
 
 License Information
 -------------------
